@@ -297,3 +297,67 @@ def add_movie_to_watchlist(path: WatchlistAddMovieSchema):
             f"Erro ao adicionar lista '{watchlist.name}', {error_msg2}"
         )
         return {"message": error_msg2}, 409
+
+
+@watchlist_bp.delete(
+    "/watchlist/<int:watchlist_id>/movie/<string:imdb_id>",
+    tags=[watchlist_tag],
+    responses={
+        "200": WatchlistDetailsSchema,
+        "409": ErrorSchema,
+        "400": ErrorSchema,
+    },
+)
+def remove_movie_from_watchlist(path: WatchlistAddMovieSchema):
+    """Remove um filme da lista.
+
+    Retorna uma representação da lista e seus filmes.
+    """
+    watchlist_id = path.watchlist_id
+    imdb_id = path.imdb_id
+
+    # Criando conexão com a base de dados
+    session = Session()
+
+    # Buscando a lista de reprodução pelo ID
+    watchlist = (
+        session.query(Watchlist)
+        .filter(Watchlist.id == watchlist_id)
+        .one_or_none()
+    )
+
+    if not watchlist:
+        # Se a lista de reprodução não foi encontrada
+        error_msg = "Lista não encontrada na base :/"
+        log_error_msg = (
+            f"Erro ao buscar lista com ID: '{watchlist_id}', {error_msg}"
+        )
+        logger.warning(log_error_msg)
+        return {"message": error_msg}, 404
+
+    logger.info(f"Removendo filme da lista #{watchlist_id}")
+
+    movie_query = session.query(AddedMovie).filter(
+        AddedMovie.imdb_id == imdb_id
+        and AddedMovie.watchlist_id == watchlist_id
+    )
+
+    movie = movie_query.one_or_none()
+
+    if not movie:
+        # Se o filme não foi encontrado
+        error_msg = "Filme não encontrado na lista :/"
+        log_error_msg = (
+            f"Erro ao buscar filme com ID: '{imdb_id}', {error_msg}"
+        )
+        logger.warning(log_error_msg)
+        return {"message": error_msg}, 404
+
+    # Removendo o filme da lista
+    movie_query.delete()
+    session.commit()
+
+    logger.info(f"Removido filme da lista #{watchlist_id}")
+
+    # retorna a representação da lista
+    return render_watchlist(watchlist), 200

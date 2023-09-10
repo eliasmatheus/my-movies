@@ -69,3 +69,7 @@ class Watchlist(Base):
     def add_movie(self, movie: AddedMovie):
         """Adiciona um novo filme à lista."""
         self.movies.append(movie)
+
+    def remove_movie(self, movie: AddedMovie):
+        """Remove um filme da lista."""
+        self.movies.remove(movie)
