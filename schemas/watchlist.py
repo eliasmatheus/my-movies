@@ -2,9 +2,9 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from models.watchlist import Watchlist
 from schemas import MovieViewSchema
-from services import Api
+from services import MDbApi
 
-api = Api()
+mdb_api = MDbApi()
 
 
 class WatchlistSchema(BaseModel):
@@ -95,7 +95,7 @@ def render_watchlist(watchlist: Watchlist):
     movies = []
 
     for movie in watchlist.movies:
-        movie = api.get_movie_by_id(movie.imdb_id)
+        movie = mdb_api.get_movie_by_id(movie.imdb_id)
         movies.append(movie)
 
     return {

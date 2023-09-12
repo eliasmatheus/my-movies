@@ -7,9 +7,10 @@ from logger import logger
 from models import Session, Watchlist, AddedMovie
 from sqlalchemy.exc import IntegrityError
 
-from services import Api
+from services import MDbApi, Top100Api
 
-api = Api()
+mdb_api = MDbApi()
+top100_api = Top100Api()
 
 movie_tag = Tag(
     name="Movie",
@@ -17,6 +18,28 @@ movie_tag = Tag(
 )
 
 movie_bp = APIBlueprint("movie", __name__)
+
+
+@movie_bp.get(
+    "/top100",
+    tags=[movie_tag],
+    responses={
+        "200": MovieSearchResponseSchema,
+        "404": ErrorSchema,
+    },
+)
+def get_top_100():
+    """Busca os 100 filmes mais populares na iMDB."""
+    logger.info(f"Buscando filmes ")
+    # fazendo a busca
+    movies = top100_api.get_movies()
+
+    if not movies:
+        # se não há filmes cadastrados
+        return {"filmes": []}, 200
+    else:
+        logger.info(f"Filme encontrado")
+        return movies, 200
 
 
 @movie_bp.get(
@@ -31,7 +54,7 @@ def search_movies(query: MovieSearchSchema):
     """Faz a busca por filmes na API."""
     logger.info(f"Buscando filmes ")
     # fazendo a busca
-    movies = api.get_movies(dict(query))
+    movies = mdb_api.get_movies(dict(query))
 
     if movies["Response"] == "False":
         logger.error(f"Filme não encontrado")
@@ -57,7 +80,7 @@ def search_movie(path: MovieByIdSchema):
     imdb_id = path.imdb_id
 
     # fazendo a busca
-    movie = api.get_movie_by_id(imdb_id)
+    movie = mdb_api.get_movie_by_id(imdb_id)
 
     if movie["Response"] == "False":
         logger.error(f"Filme não encontrado")
