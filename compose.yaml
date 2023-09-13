@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    ports:
+      - '5000:5000'
+    volumes:
+      - .:/app
+    environment:
+      FLASK_DEBUG: 'true'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
