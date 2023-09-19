@@ -29,6 +29,7 @@ class MovieViewSchema(BaseModel):
         "MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmY"
         "jU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg"
     )
+    Rated: str = "PG-13"
     Ratings: List[dict] = [
         {"Source": "Internet Movie Database", "Value": "8.0/10"},
         {"Source": "Rotten Tomatoes", "Value": "91%"},
