@@ -30,7 +30,7 @@ class WatchlistViewSchema(BaseModel):
     id: int = 1
     name: str = "Maratona Marvel"
     description: str = "Uma lista de filmes da Marvel"
-    movies_count: int = 8
+    movies: list[str] = ["tt0848228", "tt4154796"]
 
 
 class WatchlistByIDSchema(BaseModel):
@@ -53,12 +53,17 @@ def render_watchlists(watchlists: List[Watchlist]):
     result = []
 
     for list in watchlists:
+        movies = []
+
+        for movie in list.movies:
+            movies.append(movie.imdb_id)
+
         result.append(
             {
                 "id": list.id,
                 "name": list.name,
                 "description": list.description,
-                "movies_count": len(list.movies),
+                "movies": movies,
             }
         )
 
@@ -109,7 +114,38 @@ def render_watchlist(watchlist: Watchlist):
 class WatchlistAddMovieSchema(BaseModel):
     """Define como um filme a ser inserido deve ser."""
 
+    watchlist_ids: list[int] = [1]
+    imdb_id: str = Field(
+        default="tt0848228", description="ID do filme no imdb"
+    )
+
+
+class MovieWatchlistDeleteSchema(BaseModel):
+    """Define a busca de um filme dentro de uma lista."""
+
     watchlist_id: int = 1
     imdb_id: str = Field(
         default="tt0848228", description="ID do filme no imdb"
     )
+
+
+class MovieWatchlistGetSchema(BaseModel):
+    """Define a busca pelas listas que um filme pertence."""
+
+    imdb_id: str = Field(
+        default="tt0848228", description="ID do filme no imdb"
+    )
+
+
+class MovieWatchlistsViewSchema(BaseModel):
+    """Define a lista de playlists que um filme pertence."""
+
+    imdb_id: str = Field(
+        default="tt0848228", description="ID do filme no imdb"
+    )
+    watchlists: List[int] = [1]
+
+
+def render_movie_watchlists(imdb_id, watchlists):
+    """Retorna uma representação da lista segundo o MovieWatchlistsViewSchema."""
+    return {"imdb_id": imdb_id, "watchlists": watchlists}

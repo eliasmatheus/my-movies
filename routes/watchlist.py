@@ -122,7 +122,6 @@ def get_watchlist(path: WatchlistByIDSchema):
     else:
         logger.debug(f"Lista com ID: #{watchlist_id} encontrado com sucesso")
         # retorna a representação da lista
-        print(watchlist)
         return render_watchlist(watchlist), 200
 
 
@@ -232,7 +231,7 @@ def delete_watchlist(path: WatchlistByIDSchema):
 
 
 @watchlist_bp.post(
-    "/watchlist/<int:watchlist_id>/movie/<string:imdb_id>",
+    "/watchlist/movie",
     tags=[watchlist_tag],
     responses={
         "200": WatchlistDetailsSchema,
@@ -240,55 +239,57 @@ def delete_watchlist(path: WatchlistByIDSchema):
         "400": ErrorSchema,
     },
 )
-def add_movie_to_watchlist(path: WatchlistAddMovieSchema):
+def add_movie_to_watchlists(form: WatchlistAddMovieSchema):
     """Adiciona um novo filme à lista.
 
     Retorna uma representação da lista e seus filmes.
     """
-    watchlist_id = path.watchlist_id
+    watchlist_ids = form.watchlist_ids
+    print(form)
 
     # criando conexão com a base
     session = Session()
 
-    # fazendo a busca
-    watchlist = (
-        session.query(Watchlist)
-        .filter(Watchlist.id == watchlist_id)
-        .one_or_none()
+    # fazendo a busca pelas listas
+    watchlists = (
+        session.query(Watchlist).filter(Watchlist.id.in_(watchlist_ids)).all()
     )
 
-    if not watchlist:
+    if not watchlists:
         # se a lista não foi encontrado
         error_msg = "Lista não encontrada na base :/"
-        log_error_msg = (
-            f"Erro ao buscar lista com ID: '{watchlist_id}', {error_msg}"
-        )
+        log_error_msg = f"Erro ao buscar lista com IDS, {error_msg}"
         logger.warning(log_error_msg)
         return {"message": error_msg}, 404
 
-    logger.info(f"Adicionando filme à lista #{watchlist_id}")
-
-    # checando se o filme já foi adicionado à lista
-    for movie in watchlist.movies:
-        if movie.imdb_id == path.imdb_id:
-            error_msg = "Filme já adicionado à lista :/"
-            logger.warning(
-                f"Erro ao adicionar lista '{watchlist.name}', {error_msg}"
-            )
-            return {"message": error_msg}, 409
+    logger.info(f"Adicionando filme às listas")
 
     try:
-        # criando filme
-        movie = AddedMovie(path.imdb_id)
+        # adicionando filme às listas
+        for watchlist in watchlists:
+            print(watchlist)
+            # checando se o filme já foi adicionado à lista
+            for movie in watchlist.movies:
+                if movie.imdb_id == form.imdb_id:
+                    error_msg = "Filme já adicionado à lista :/"
+                    logger.warning(
+                        f"Erro ao adicionar lista '{watchlist.name}', {error_msg}"
+                    )
 
-        # adicionando filme à lista
-        watchlist.add_movie(movie)
-        session.commit()
+                    break
 
-        logger.info(f"Adicionado filme à lista #{watchlist_id}")
+            else:
+                # criando filme
+                movie = AddedMovie(form.imdb_id)
+                watchlist.add_movie(movie)
+
+                # efetivando o comando de adição de novo item na tabela
+                session.commit()
+
+        logger.info(f"Adicionado filme às listas")
 
         # retorna a representação da lista
-        return render_watchlist(watchlist), 200
+        return render_watchlists(watchlists), 200
 
     except IntegrityError as e:
         # como a duplicidade do name é a provável razão do IntegrityError
@@ -297,6 +298,45 @@ def add_movie_to_watchlist(path: WatchlistAddMovieSchema):
             f"Erro ao adicionar lista '{watchlist.name}', {error_msg2}"
         )
         return {"message": error_msg2}, 409
+
+
+@watchlist_bp.get(
+    "/watchlist/movie/<string:imdb_id>",
+    tags=[watchlist_tag],
+    responses={
+        "200": WatchlistDetailsSchema,
+        "409": ErrorSchema,
+        "400": ErrorSchema,
+    },
+)
+def get_movie_watchlists(path: MovieWatchlistGetSchema):
+    """Busca pelas listas que um filme pertence.
+
+    Retorna uma representação da lista e seus filmes.
+    """
+    imdb_id = path.imdb_id
+
+    # Criando conexão com a base de dados
+    session = Session()
+
+    # Buscando todas as vezes que o filme foi adicionado à lista
+    movies = (
+        session.query(AddedMovie).filter(AddedMovie.imdb_id == imdb_id).all()
+    )
+
+    if not movies:
+        # Se o filme não foi encontrado
+        # retorna a representação da lista
+        render_movie_watchlists(imdb_id, []), 204
+
+    watchlists = []
+
+    for movie in movies:
+        print(movie)
+        watchlists.append(movie.watchlist)
+
+    # retorna a representação da lista
+    return render_movie_watchlists(imdb_id, watchlists), 200
 
 
 @watchlist_bp.delete(
