@@ -24,11 +24,20 @@ class AddedMovie(Base):
     imdb_id = Column(String(12))
     created_at = Column(DateTime, default=datetime.now())
 
-    watchlist = Column(Integer, ForeignKey("watchlist.id"), nullable=False)
+    watchlist_id = Column(
+        Integer, ForeignKey("watchlist.id", ondelete="CASCADE")
+    )
+    watchlist = relationship(
+        "Watchlist",
+        foreign_keys="AddedMovie.watchlist_id",
+        back_populates="movies",
+    )
 
     # Criando um requisito de unicidade envolvendo uma par de informações
     __table_args__ = (
-        UniqueConstraint("imdb_id", "watchlist", name="added_movie_unique_id"),
+        UniqueConstraint(
+            "imdb_id", "watchlist_id", name="added_movie_unique_id"
+        ),
     )
 
     def __init__(self, imdb_id: str, created_at: Union[DateTime, None] = None):
@@ -49,10 +58,10 @@ class AddedMovie(Base):
             "id": self.id,
             "imdb_id": self.imdb_id,
             "created_at": self.created_at,
-            "watchlist_id": self.watchlist.id,
+            "watchlist_id": self.watchlist_id,
         }
 
     def __repr__(self):
         """Retorna uma representação do Produto em forma de texto."""
         return f"Added(id={self.id}, imdb_id='{self.imdb_id}',\
-            created_at='{self.created_at}', watchlist_id='{self.watchlist}')"
+            created_at='{self.created_at}', watchlist_id='{self.watchlist_id}')"

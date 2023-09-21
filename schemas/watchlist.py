@@ -120,8 +120,8 @@ class WatchlistAddMovieSchema(BaseModel):
     )
 
 
-class MovieWatchlistDeleteSchema(BaseModel):
-    """Define a busca de um filme dentro de uma lista."""
+class WatchlistRemoveMovieSchema(BaseModel):
+    """Define como um filme a ser inserido deve ser."""
 
     watchlist_id: int = 1
     imdb_id: str = Field(
@@ -146,6 +146,11 @@ class MovieWatchlistsViewSchema(BaseModel):
     watchlists: List[int] = [1]
 
 
-def render_movie_watchlists(imdb_id, watchlists):
+def render_movie_watchlists(imdb_id, watchlists: List[Watchlist]):
     """Retorna uma representação da lista segundo o MovieWatchlistsViewSchema."""
-    return {"imdb_id": imdb_id, "watchlists": watchlists}
+    watchlist_ids = []
+
+    for list in watchlists:
+        watchlist_ids.append(list.id)
+
+    return {"imdb_id": imdb_id, "watchlists": watchlist_ids}

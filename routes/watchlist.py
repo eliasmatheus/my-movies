@@ -213,6 +213,7 @@ def delete_watchlist(path: WatchlistByIDSchema):
     count = (
         session.query(Watchlist).filter(Watchlist.id == watchlist_id).delete()
     )
+
     session.commit()
 
     if count:
@@ -245,7 +246,6 @@ def add_movie_to_watchlists(form: WatchlistAddMovieSchema):
     Retorna uma representação da lista e seus filmes.
     """
     watchlist_ids = form.watchlist_ids
-    print(form)
 
     # criando conexão com a base
     session = Session()
@@ -267,7 +267,6 @@ def add_movie_to_watchlists(form: WatchlistAddMovieSchema):
     try:
         # adicionando filme às listas
         for watchlist in watchlists:
-            print(watchlist)
             # checando se o filme já foi adicionado à lista
             for movie in watchlist.movies:
                 if movie.imdb_id == form.imdb_id:
@@ -332,7 +331,6 @@ def get_movie_watchlists(path: MovieWatchlistGetSchema):
     watchlists = []
 
     for movie in movies:
-        print(movie)
         watchlists.append(movie.watchlist)
 
     # retorna a representação da lista
@@ -348,7 +346,7 @@ def get_movie_watchlists(path: MovieWatchlistGetSchema):
         "400": ErrorSchema,
     },
 )
-def remove_movie_from_watchlist(path: WatchlistAddMovieSchema):
+def remove_movie_from_watchlist(path: WatchlistRemoveMovieSchema):
     """Remove um filme da lista.
 
     Retorna uma representação da lista e seus filmes.

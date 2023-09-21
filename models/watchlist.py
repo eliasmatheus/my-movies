@@ -25,7 +25,12 @@ class Watchlist(Base):
     # um valor definido pelo usuário
     created_at = Column(DateTime, default=datetime.now())
 
-    movies = relationship("AddedMovie")
+    movies = relationship(
+        "AddedMovie",
+        back_populates="watchlist",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
 
     def __init__(
         self,

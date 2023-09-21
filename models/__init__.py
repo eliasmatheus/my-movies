@@ -1,12 +1,21 @@
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
+from sqlalchemy.engine import Engine
 import os
 
 # importando os elementos definidos no modelo
 from models.base import Base
 from models.added_movie import AddedMovie
 from models.watchlist import Watchlist
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    """Ativa o suporte a foreign keys no sqlite3."""
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 db_path = "database/"
