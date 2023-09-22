@@ -41,6 +41,19 @@ de acordo com o diagrama abaixo:
 Será necessário ter todas as libs python listadas no `requirements.txt` instaladas.
 Após clonar o repositório, é necessário ir ao diretório raiz, pelo terminal, para poder executar os comandos descritos abaixo.
 
+#### Configurando o arquivo .env
+
+Crie uma cópia do arquivo `.env.exemple` com o nome `.env` na raiz do projeto e adicione as seguintes variáveis de ambiente:
+
+```
+API_KEY=api_key
+```
+
+> A API_KEY pode ser obtida no site [OMDb API](http://www.omdbapi.com/apikey.aspx),
+> bastando apenas fornecer um e-mail válido.
+
+#### Instalando as dependências
+
 > É fortemente indicado o uso de ambientes virtuais do tipo [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html).
 
 ```
