@@ -79,7 +79,7 @@ def get_watchlists():
 
     if not watchlists:
         # se não há watchlists cadastradas
-        return {"watchlist": []}, 200
+        return {"watchlists": []}, 200
     else:
         logger.info(f"%d watchlist econtrados" % len(watchlists))
         # retorna a representação das listas
