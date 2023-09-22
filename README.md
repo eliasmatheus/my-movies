@@ -1,8 +1,24 @@
 # My Movies API
 
-Este pequeno projeto faz parte do projeto final da Disciplina **Desenvolvimento Full Stack Avançado**
+Este projeto de API foi desenvolvido em Flask para a disciplina de **Desenvolvimento Backend Avançado** do programa de pós-graduação em Desenvolvimento Full Stack da [PUC-Rio](https://www.puc-rio.br/index.html).
 
-O objetivo aqui é apresetar uma API emplementada seguindo o estilo REST.
+O objetivo deste projeto é criar uma API para gerenciar uma lista de filmes, com as seguintes funcionalidades:
+
+- [x] Listar os filmes mais populares na IMDb
+- [x] Buscar filmes por nome
+- [x] Criar, editar e remover listas de filmes
+- [x] Adicionar ou remover filmes de uma lista
+
+Esta API foi feita baseada em microserviços usando uma arquitetura REST,
+de acordo com o diagrama abaixo:
+
+<p align="center">
+  <img src="./static/diagram.png" alt="My Project GIF">
+</p>
+
+---
+
+## Documentação
 
 <p align="center">
   <img src="./static/screenshot.png" alt="My Project GIF">
@@ -14,6 +30,9 @@ O objetivo aqui é apresetar uma API emplementada seguindo o estilo REST.
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [OpenAPI3](https://swagger.io/specification/)
 - [SQLite](https://www.sqlite.org/index.html)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [OMDb API](http://www.omdbapi.com/)
 
 ---
 
@@ -62,14 +81,12 @@ Certifique-se de ter o [Docker](https://docs.docker.com/engine/install/) instala
 Navegue até o diretório que contém o Dockerfile e o requirements.txt no terminal.
 Execute **como administrador** o seguinte comando para construir a imagem Docker:
 
-```
-$ docker build -t my-movies-api .
-```
-
-Uma vez criada a imagem, para executar o container basta executar, **como administrador**, seguinte o comando:
-
-```
-$ docker run --name my-movies-api -p 5000:5000 my-movies-api
+```bash
+$ docker-compose up
 ```
 
-Uma vez executando, para acessar a API, basta abrir o [http://localhost:5000/#/](http://localhost:5000/#/) no navegador.
+Acesse o [http://localhost:5000/](http://localhost:5000/) para acessar a aplicação.
+
+## Executando o microserviço de Web Scrapping dos 100 filmes mais populares da IMDb
+
+Para rodar o microserviço, acesse o repositório do [microserviço](https://github.com/eliasmatheus/imdb-top100-microservice.git) e siga as instruções.
