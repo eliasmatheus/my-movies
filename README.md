@@ -68,13 +68,13 @@ automaticamente após uma mudança no código fonte.
 
 ---
 
-### Acesso no browser
+#### Acesso no browser
 
 Abra o [http://localhost:5000/#/](http://localhost:5000/#/) no navegador para verificar o status da API em execução.
 
 ---
 
-## Como executar através do Docker
+### Como executar através do Docker
 
 Certifique-se de ter o [Docker](https://docs.docker.com/engine/install/) instalado e em execução em sua máquina.
 
@@ -90,3 +90,7 @@ Acesse o [http://localhost:5000/](http://localhost:5000/) para acessar a aplica�
 ## Executando o microserviço de Web Scrapping dos 100 filmes mais populares da IMDb
 
 Para rodar o microserviço, acesse o repositório do [microserviço](https://github.com/eliasmatheus/imdb-top100-microservice.git) e siga as instruções.
+
+## Executando o frontend
+
+Para rodar o frontend, acesse o repositório do [frontend](https://github.com/eliasmatheus/my-movies-frontend.git) e siga as instruções.
