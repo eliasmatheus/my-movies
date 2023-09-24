@@ -376,8 +376,7 @@ def remove_movie_from_watchlist(path: WatchlistRemoveMovieSchema):
     logger.info(f"Removendo filme da lista #{watchlist_id}")
 
     movie_query = session.query(AddedMovie).filter(
-        AddedMovie.imdb_id == imdb_id
-        and AddedMovie.watchlist_id == watchlist_id
+        AddedMovie.imdb_id == imdb_id, AddedMovie.watchlist_id == watchlist_id
     )
 
     movie = movie_query.one_or_none()
